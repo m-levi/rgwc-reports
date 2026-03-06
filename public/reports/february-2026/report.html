@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGWC — February 2026 Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        /* ── Reset & Base ─────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #fafaf9;
+            color: #1c1917;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Hero Banner ──────────────────────────────── */
+        .hero {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%);
+            color: #fff;
+            padding: 56px 48px 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(217,119,6,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero__eyebrow {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d97706;
+            margin-bottom: 12px;
+        }
+        .hero__title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            position: relative;
+        }
+        .hero__subtitle {
+            font-size: 1rem;
+            color: #a8a29e;
+            font-weight: 400;
+        }
+
+        /* ── Executive Summary ────────────────────────── */
+        .exec-summary {
+            background: #fff;
+            border-bottom: 1px solid #e7e5e4;
+            padding: 32px 48px;
+        }
+        .exec-summary__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 700px) { .exec-summary__grid { grid-template-columns: 1fr; } }
+        .exec-callout {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .exec-callout__icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .exec-callout__icon--up { background: #ecfdf5; color: #059669; }
+        .exec-callout__icon--down { background: #fef2f2; color: #dc2626; }
+        .exec-callout__icon--info { background: #eff6ff; color: #3b82f6; }
+        .exec-callout__text { font-size: 0.88rem; color: #44403c; line-height: 1.5; }
+        .exec-callout__text strong { color: #1c1917; }
+
+        /* ── TOC Sidebar (desktop only) ──────────────── */
+        .toc-sidebar {
+            display: none;
+        }
+        .toc-sidebar__title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #a8a29e;
+            margin-bottom: 14px;
+            padding-left: 12px;
+        }
+        .toc-sidebar__list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .toc-sidebar__link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            font-size: 0.78rem;
+            color: #78716c;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.15s;
+            line-height: 1.3;
+        }
+        .toc-sidebar__link:hover {
+            background: #f5f5f4;
+            color: #1c1917;
+        }
+        .toc-sidebar__link.active {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 600;
+        }
+        .toc-sidebar__num {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            background: #e7e5e4;
+            color: #78716c;
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .toc-sidebar__link.active .toc-sidebar__num {
+            background: #d97706;
+            color: #fff;
+        }
+
+        /* ── Content wrapper ──────────────────────────── */
+        .content { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
+
+        /* ── Layout with TOC on desktop ─────────────── */
+        .content-layout {
+            display: block;
+        }
+        @media (min-width: 1100px) {
+            .content-layout {
+                display: grid;
+                grid-template-columns: 180px 1fr;
+                gap: 32px;
+                max-width: 1300px;
+                margin: 0 auto;
+                padding: 0 48px 80px;
+            }
+            .content-layout .toc-sidebar {
+                display: block;
+                position: sticky;
+                top: 24px;
+                align-self: start;
+                padding-top: 56px;
+            }
+            .content-layout .content {
+                max-width: none;
+                margin: 0;
+                padding: 0 0 80px;
+            }
+        }
+
+        /* ── Section ──────────────────────────────────── */
+        .section { margin-top: 56px; }
+        .section__header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #e7e5e4;
+        }
+        .section__number {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #1c1917;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section__title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #1c1917;
+        }
+
+        /* ── KPI Cards ────────────────────────────────── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        .kpi {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #e7e5e4;
+            transition: box-shadow 0.15s;
+        }
+        .kpi:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .kpi__value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1c1917;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+        }
+        .kpi__label {
+            font-size: 0.75rem;
+            color: #78716c;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .kpi__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .kpi__badge--up { background: #ecfdf5; color: #059669; }
+        .kpi__badge--down { background: #fef2f2; color: #dc2626; }
+        .kpi__prior {
+            font-size: 0.68rem;
+            color: #a8a29e;
+            margin-top: 4px;
+        }
+
+        /* ── Chart containers ─────────────────────────── */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        @media (max-width: 700px) { .chart-row { grid-template-columns: 1fr; } }
+        .chart-card {
+            background: #fff;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .chart-card__title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #78716c;
+            margin-bottom: 16px;
+        }
+        .chart-card__canvas { height: 260px; }
+
+        /* ── Tables ───────────────────────────────────── */
+        .table-wrap {
+            background: #fff;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        thead th {
+            text-align: left;
+            font-weight: 600;
+            color: #78716c;
+            padding: 14px 20px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fafaf9;
+            border-bottom: 1px solid #e7e5e4;
+        }
+        td { padding: 12px 20px; border-bottom: 1px solid #f5f5f4; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #fafaf9; }
+        .text-right { text-align: right; }
+        .total-row { font-weight: 700; background: #fafaf9; }
+        .total-row td { border-top: 1px solid #e7e5e4; }
+        .positive { color: #059669; }
+        .negative { color: #dc2626; }
+        .neutral { color: #78716c; }
+        .category-header td {
+            background: #f5f5f4;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #57534e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 20px;
+        }
+        .indented { padding-left: 36px !important; }
+
+        /* ── Note / Callout ───────────────────────────── */
+        .note {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            font-size: 0.82rem;
+            color: #1e40af;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            line-height: 1.6;
+        }
+        .note__icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .note strong { color: #1e3a8a; }
+
+        /* ── Metric Cards (smaller) ───────────────────── */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 700px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+        .metric {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e7e5e4;
+        }
+        .metric__value { font-size: 1.25rem; font-weight: 700; color: #1c1917; font-variant-numeric: tabular-nums; }
+        .metric__label { font-size: 0.73rem; color: #78716c; margin-top: 4px; font-weight: 500; }
+        .metric__sub { font-size: 0.7rem; margin-top: 6px; font-weight: 500; }
+
+        /* ── Big stat callout ─────────────────────────── */
+        .big-stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
+            padding: 32px;
+        }
+        .big-stat { text-align: center; }
+        .big-stat__value { font-size: 2.5rem; font-weight: 700; color: #1c1917; }
+        .big-stat__label { font-size: 0.82rem; color: #78716c; margin-top: 4px; }
+
+        /* ── Divider ──────────────────────────────────── */
+        .divider { border: none; border-top: 1px solid #e7e5e4; margin: 56px 0; }
+
+        /* ── Footer ───────────────────────────────────── */
+        .footer {
+            margin-top: 56px;
+            padding: 24px 0;
+            border-top: 1px solid #e7e5e4;
+            font-size: 0.73rem;
+            color: #a8a29e;
+            display: flex;
+            justify-content: space-between;
+        }
+        @media (max-width: 600px) { .footer { flex-direction: column; gap: 4px; } }
+
+        /* ── Print ────────────────────────────────────── */
+        @media print {
+            body { background: #fff; }
+            .hero { padding: 32px; }
+            .content { padding: 0 32px 40px; }
+            .chart-row, .table-wrap { break-inside: avoid; }
+            .toc-sidebar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- HERO BANNER                                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="hero">
+    <div class="hero__eyebrow">Monthly Performance Report</div>
+    <h1 class="hero__title">February 2026</h1>
+    <p class="hero__subtitle">The Really Good Whisky Company</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- EXECUTIVE SUMMARY                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="exec-summary">
+    <div class="exec-summary__grid">
+        <div class="exec-callout">
+            <div class="exec-callout__icon exec-callout__icon--up">&#9650;</div>
+            <div class="exec-callout__text">
+                <strong>Orders surged 45.8%</strong> year-over-year (253 to 369), driven by strong online store growth and new social channels.
+            </div>
+        </div>
+        <div class="exec-callout">
+            <div class="exec-callout__icon exec-callout__icon--info">&#9993;</div>
+            <div class="exec-callout__text">
+                <strong>Email drove 58% of revenue</strong> (&pound;40,271) across 28 campaigns with a 51.2% average open rate.
+            </div>
+        </div>
+        <div class="exec-callout">
+            <div class="exec-callout__icon exec-callout__icon--down">&#9660;</div>
+            <div class="exec-callout__text">
+                <strong>AOV dropped 40.6%</strong> (&pound;317 to &pound;188) as order mix shifted toward lower-priced products.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-layout">
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS (desktop sidebar)             -->
+<!-- ═══════════════════════════════════════════════ -->
+<nav class="toc-sidebar" id="toc">
+    <div class="toc-sidebar__title">Contents</div>
+    <ul class="toc-sidebar__list">
+        <li><a href="#sec-revenue" class="toc-sidebar__link active"><span class="toc-sidebar__num">1</span> Revenue</a></li>
+        <li><a href="#sec-products" class="toc-sidebar__link"><span class="toc-sidebar__num">2</span> Top Products</a></li>
+        <li><a href="#sec-email" class="toc-sidebar__link"><span class="toc-sidebar__num">3</span> Email</a></li>
+        <li><a href="#sec-traffic" class="toc-sidebar__link"><span class="toc-sidebar__num">4</span> Traffic</a></li>
+        <li><a href="#sec-countries" class="toc-sidebar__link"><span class="toc-sidebar__num">5</span> Countries</a></li>
+    </ul>
+</nav>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1: REVENUE OVERVIEW                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-revenue">
+    <div class="section__header">
+        <div class="section__number">1</div>
+        <div class="section__title">Revenue Overview</div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi">
+            <div class="kpi__value">&pound;69,380</div>
+            <div class="kpi__label">Total Revenue</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 13.4% YoY</div>
+            <div class="kpi__prior">Feb 25: &pound;80,143</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">369</div>
+            <div class="kpi__label">Orders</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 45.8% YoY</div>
+            <div class="kpi__prior">Feb 25: 253</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">&pound;187.99</div>
+            <div class="kpi__label">Avg Order Value</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 40.6% YoY</div>
+            <div class="kpi__prior">Feb 25: &pound;316.74</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">34,873</div>
+            <div class="kpi__label">Sessions</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 89.7% YoY</div>
+            <div class="kpi__prior">Feb 25: 18,378</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">1.06%</div>
+            <div class="kpi__label">Conversion Rate</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 23.2% YoY</div>
+            <div class="kpi__prior">Feb 25: 1.38%</div>
+        </div>
+    </div>
+
+    <div class="chart-row">
+        <div class="chart-card">
+            <div class="chart-card__title">Revenue by Sales Channel</div>
+            <div class="chart-card__canvas"><canvas id="channelPie"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card__title">Channel Comparison YoY</div>
+            <div class="chart-card__canvas"><canvas id="channelBar"></canvas></div>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Sales Channel</th><th class="text-right">Feb 2026</th><th class="text-right">Feb 2025</th><th class="text-right">YoY</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Online Store</td><td class="text-right">&pound;37,707</td><td class="text-right">&pound;28,904</td><td class="text-right positive">+30.5%</td></tr>
+            <tr><td>Draft Orders</td><td class="text-right">&pound;18,614</td><td class="text-right">&pound;32,716</td><td class="text-right negative">-43.1%</td></tr>
+            <tr><td>Point of Sale</td><td class="text-right">&pound;8,701</td><td class="text-right">&pound;16,677</td><td class="text-right negative">-47.8%</td></tr>
+            <tr><td>Shopify Mobile</td><td class="text-right">&pound;4,069</td><td class="text-right">&pound;1,846</td><td class="text-right positive">+120.4%</td></tr>
+            <tr><td>Facebook &amp; Instagram</td><td class="text-right">&pound;289</td><td class="text-right">&pound;0</td><td class="text-right positive">NEW</td></tr>
+            <tr class="total-row"><td>Total</td><td class="text-right">&pound;69,380</td><td class="text-right">&pound;80,143</td><td class="text-right negative">-13.4%</td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2: TOP PRODUCTS                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-products">
+    <div class="section__header">
+        <div class="section__number">2</div>
+        <div class="section__title">Top Products</div>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th style="width:5%">#</th><th>Product</th><th class="text-right">Units</th><th class="text-right">Revenue</th></tr>
+        </thead>
+        <tbody>
+            <tr><td style="color:#a8a29e">1</td><td>Kilkerran 8 Year Old Cask Strength Bourbon 2026 Release</td><td class="text-right">71</td><td class="text-right">&pound;3,576</td></tr>
+            <tr><td style="color:#a8a29e">2</td><td>Springbank 10 Year Old Single Malt Scotch Whisky</td><td class="text-right">50</td><td class="text-right">&pound;2,894</td></tr>
+            <tr><td style="color:#a8a29e">3</td><td>Old School Single Malt 50 Year Old Coastal Edition</td><td class="text-right">7</td><td class="text-right">&pound;2,594</td></tr>
+            <tr><td style="color:#a8a29e">4</td><td>Glenallachie 11 Year Old 2013 Single Cask</td><td class="text-right">28</td><td class="text-right">&pound;2,210</td></tr>
+            <tr><td style="color:#a8a29e">5</td><td>Glenfarclas 42 Years Old 1977 Special Bottling</td><td class="text-right">1</td><td class="text-right">&pound;1,800</td></tr>
+            <tr><td style="color:#a8a29e">6</td><td>Daftmill 12 Year 2005 Old Inaugural Release</td><td class="text-right">1</td><td class="text-right">&pound;1,656</td></tr>
+            <tr><td style="color:#a8a29e">7</td><td>Blair Athol 38 Year Old 1986 One8Nine</td><td class="text-right">1</td><td class="text-right">&pound;1,607</td></tr>
+            <tr><td style="color:#a8a29e">8</td><td>Dalmore 17 Year Old New Release Single Malt</td><td class="text-right">10</td><td class="text-right">&pound;1,578</td></tr>
+            <tr><td style="color:#a8a29e">9</td><td>Dalmore King Alexander III Single Malt</td><td class="text-right">7</td><td class="text-right">&pound;1,443</td></tr>
+            <tr><td style="color:#a8a29e">10</td><td>Dalmore 12 Year Old Highland Single Malt</td><td class="text-right">27</td><td class="text-right">&pound;1,381</td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3: EMAIL PERFORMANCE                    -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-email">
+    <div class="section__header">
+        <div class="section__number">3</div>
+        <div class="section__title">Email Performance (Klaviyo)</div>
+    </div>
+
+    <div class="note">
+        <svg class="note__icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+        <div><strong>Klaviyo Attribution:</strong> Revenue below uses Klaviyo's attribution model, which credits a sale to email if a recipient opens/clicks within the attribution window. This can overlap with Shopify channel revenue above.</div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="metric__value">&pound;40,271</div>
+            <div class="metric__label">Total Email Revenue</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">58.1%</div>
+            <div class="metric__label">% of Total Sales</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">&pound;26,570</div>
+            <div class="metric__label">Campaign Revenue</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">&pound;13,701</div>
+            <div class="metric__label">Flow Revenue</div>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="metric__value">51.2%</div>
+            <div class="metric__label">Avg. Open Rate</div>
+            <div class="metric__sub neutral">28 campaigns</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">1.36%</div>
+            <div class="metric__label">Avg. Click Rate</div>
+            <div class="metric__sub neutral">All campaigns</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">&pound;0.11</div>
+            <div class="metric__label">Rev. per Recipient</div>
+            <div class="metric__sub neutral">Campaign avg.</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">28</div>
+            <div class="metric__label">Campaigns Sent</div>
+            <div class="metric__sub neutral">February 2026</div>
+        </div>
+    </div>
+
+    <div class="chart-row">
+        <div class="chart-card">
+            <div class="chart-card__title">Campaigns vs Flows Revenue</div>
+            <div class="chart-card__canvas"><canvas id="emailPie"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card__title">Revenue Split</div>
+            <div class="big-stats">
+                <div class="big-stat">
+                    <div class="big-stat__value">66%</div>
+                    <div class="big-stat__label">Campaigns</div>
+                </div>
+                <div style="width:1px;height:60px;background:#e7e5e4"></div>
+                <div class="big-stat">
+                    <div class="big-stat__value">34%</div>
+                    <div class="big-stat__label">Flows</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 4: TRAFFIC & SESSIONS                   -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-traffic">
+    <div class="section__header">
+        <div class="section__number">4</div>
+        <div class="section__title">Traffic &amp; Sessions</div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="metric__value">34,873</div>
+            <div class="metric__label">Total Sessions</div>
+            <div class="metric__sub positive">+89.7% vs Feb 2025</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">29,620</div>
+            <div class="metric__label">Unique Visitors</div>
+            <div class="metric__sub neutral">Online store</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">1.18</div>
+            <div class="metric__label">Sessions / Visitor</div>
+            <div class="metric__sub neutral">Average</div>
+        </div>
+        <div class="metric">
+            <div class="metric__value">1.06%</div>
+            <div class="metric__label">Conversion Rate</div>
+            <div class="metric__sub negative">-23.2% vs Feb 2025</div>
+        </div>
+    </div>
+
+    <div class="chart-row">
+        <div class="chart-card">
+            <div class="chart-card__title">Sessions by Category</div>
+            <div class="chart-card__canvas"><canvas id="trafficPie"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card__title">YoY Comparison by Category</div>
+            <div class="chart-card__canvas"><canvas id="trafficBar"></canvas></div>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Traffic Source</th><th class="text-right">Feb 2026</th><th class="text-right">Feb 2025</th><th class="text-right">YoY</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Direct Traffic</td><td class="text-right">25,615</td><td class="text-right">8,768</td><td class="text-right positive">+192.1%</td></tr>
+
+            <tr class="category-header"><td colspan="4">Search Engines</td></tr>
+            <tr><td class="indented">Google</td><td class="text-right">6,425</td><td class="text-right">7,973</td><td class="text-right negative">-19.4%</td></tr>
+            <tr><td class="indented">Bing</td><td class="text-right">122</td><td class="text-right">134</td><td class="text-right negative">-9.0%</td></tr>
+            <tr><td class="indented">DuckDuckGo</td><td class="text-right">83</td><td class="text-right">95</td><td class="text-right negative">-12.6%</td></tr>
+            <tr><td class="indented">Yandex</td><td class="text-right">39</td><td class="text-right">92</td><td class="text-right negative">-57.6%</td></tr>
+            <tr><td class="indented">Yahoo</td><td class="text-right">35</td><td class="text-right">45</td><td class="text-right negative">-22.2%</td></tr>
+            <tr><td class="indented">Ecosia</td><td class="text-right">5</td><td class="text-right">2</td><td class="text-right positive">+150%</td></tr>
+
+            <tr class="category-header"><td colspan="4">Social</td></tr>
+            <tr><td class="indented">Facebook</td><td class="text-right">1,007</td><td class="text-right">36</td><td class="text-right positive">+2,697%</td></tr>
+            <tr><td class="indented">Instagram</td><td class="text-right">805</td><td class="text-right">216</td><td class="text-right positive">+273%</td></tr>
+            <tr><td class="indented">LinkedIn</td><td class="text-right">30</td><td class="text-right">1</td><td class="text-right positive">+2,900%</td></tr>
+            <tr><td class="indented">YouTube</td><td class="text-right">4</td><td class="text-right">7</td><td class="text-right negative">-42.9%</td></tr>
+            <tr><td class="indented">Pinterest</td><td class="text-right">2</td><td class="text-right">1</td><td class="text-right positive">+100%</td></tr>
+            <tr><td class="indented">Twitter</td><td class="text-right">1</td><td class="text-right">2</td><td class="text-right negative">-50%</td></tr>
+            <tr><td class="indented">Threads</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right positive">NEW</td></tr>
+            <tr><td class="indented">Reddit</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right positive">NEW</td></tr>
+
+            <tr class="category-header"><td colspan="4">Email</td></tr>
+            <tr><td class="indented">Gmail</td><td class="text-right">357</td><td class="text-right">228</td><td class="text-right positive">+56.6%</td></tr>
+            <tr><td class="indented">Yahoo Mail</td><td class="text-right">2</td><td class="text-right">1</td><td class="text-right positive">+100%</td></tr>
+            <tr><td class="indented">Outlook</td><td class="text-right">1</td><td class="text-right">1</td><td class="text-right neutral">0%</td></tr>
+
+            <tr class="category-header"><td colspan="4">AI Assistants</td></tr>
+            <tr><td class="indented">ChatGPT</td><td class="text-right">18</td><td class="text-right">5</td><td class="text-right positive">+260%</td></tr>
+            <tr><td class="indented">Perplexity</td><td class="text-right">4</td><td class="text-right">1</td><td class="text-right positive">+300%</td></tr>
+
+            <tr class="category-header"><td colspan="4">Industry Sites</td></tr>
+            <tr><td class="indented">Whiskybase</td><td class="text-right">61</td><td class="text-right">76</td><td class="text-right negative">-19.7%</td></tr>
+            <tr><td class="indented">Springbank</td><td class="text-right">35</td><td class="text-right">81</td><td class="text-right negative">-56.8%</td></tr>
+            <tr><td class="indented">Wine-Searcher</td><td class="text-right">9</td><td class="text-right">17</td><td class="text-right negative">-47.1%</td></tr>
+            <tr><td class="indented">Murray McDavid</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right positive">NEW</td></tr>
+            <tr><td class="indented">Whisky Bargain</td><td class="text-right">1</td><td class="text-right">1</td><td class="text-right neutral">0%</td></tr>
+
+            <tr class="category-header"><td colspan="4">Other Referrals</td></tr>
+            <tr><td class="indented">Shopify</td><td class="text-right">27</td><td class="text-right">21</td><td class="text-right positive">+28.6%</td></tr>
+            <tr><td class="indented">DCInside</td><td class="text-right">13</td><td class="text-right">13</td><td class="text-right neutral">0%</td></tr>
+            <tr><td class="indented">Scotsman</td><td class="text-right">9</td><td class="text-right">0</td><td class="text-right positive">NEW</td></tr>
+            <tr><td class="indented">Naver</td><td class="text-right">8</td><td class="text-right">17</td><td class="text-right negative">-52.9%</td></tr>
+            <tr><td class="indented">Other Sources</td><td class="text-right">138</td><td class="text-right">534</td><td class="text-right negative">-74.2%</td></tr>
+
+            <tr class="total-row"><td>Total</td><td class="text-right">34,873</td><td class="text-right">18,378</td><td class="text-right positive">+89.7%</td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 5: SESSIONS BY COUNTRY                  -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-countries">
+    <div class="section__header">
+        <div class="section__number">5</div>
+        <div class="section__title">Sessions by Country</div>
+    </div>
+
+    <div class="chart-row">
+        <div class="chart-card">
+            <div class="chart-card__title">Sessions by Country</div>
+            <div class="chart-card__canvas"><canvas id="locationPie"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card__title">Top Countries</div>
+            <div class="chart-card__canvas"><canvas id="locationBar"></canvas></div>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Country</th><th class="text-right">Sessions</th><th class="text-right">% of Total</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>United States</td><td class="text-right">10,146</td><td class="text-right">29.1%</td></tr>
+            <tr><td>United Kingdom</td><td class="text-right">9,672</td><td class="text-right">27.7%</td></tr>
+            <tr><td>China</td><td class="text-right">8,202</td><td class="text-right">23.5%</td></tr>
+            <tr><td>Singapore</td><td class="text-right">761</td><td class="text-right">2.2%</td></tr>
+            <tr><td>South Korea</td><td class="text-right">720</td><td class="text-right">2.1%</td></tr>
+            <tr><td>Canada</td><td class="text-right">420</td><td class="text-right">1.2%</td></tr>
+            <tr><td>Brazil</td><td class="text-right">370</td><td class="text-right">1.1%</td></tr>
+            <tr><td>India</td><td class="text-right">345</td><td class="text-right">1.0%</td></tr>
+            <tr><td>Japan</td><td class="text-right">342</td><td class="text-right">1.0%</td></tr>
+            <tr><td>Israel</td><td class="text-right">252</td><td class="text-right">0.7%</td></tr>
+            <tr><td>Other</td><td class="text-right">3,643</td><td class="text-right">10.4%</td></tr>
+            <tr class="total-row"><td>Total</td><td class="text-right">34,873</td><td class="text-right">100%</td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- FOOTER                                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="footer">
+    <span>Data: Klaviyo (email attribution) &bull; Shopify Analytics</span>
+    <span>February 1&ndash;28, 2026 &bull; Generated March 5, 2026</span>
+</div>
+
+</div><!-- .content -->
+</div><!-- .content-layout -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- CHARTS                                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = '#78716c';
+
+    const amber  = '#d97706';
+    const stone  = '#1c1917';
+    const blue   = '#3b82f6';
+    const slate  = '#64748b';
+    const light  = '#d6d3d1';
+
+    const palette5 = ['#d97706', '#1c1917', '#78716c', '#a8a29e', '#d6d3d1'];
+    const palette7 = ['#d97706', '#1c1917', '#78716c', '#059669', '#8b5cf6', '#3b82f6', '#d6d3d1'];
+
+    const doughnutOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '62%',
+        plugins: {
+            legend: { position: 'right', labels: { boxWidth: 10, padding: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } }
+        }
+    };
+
+    // 1 — Revenue by Channel (Doughnut)
+    new Chart(document.getElementById('channelPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Online Store', 'Draft Orders', 'Point of Sale', 'Shopify Mobile', 'Facebook & IG'],
+            datasets: [{ data: [37707, 18614, 8701, 4069, 289], backgroundColor: palette5, borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 1 — Revenue by Channel (Bar YoY)
+    new Chart(document.getElementById('channelBar'), {
+        type: 'bar',
+        data: {
+            labels: ['Online Store', 'Draft Orders', 'POS', 'Mobile', 'FB & IG'],
+            datasets: [
+                { label: 'Feb 2026', data: [37.7, 18.6, 8.7, 4.1, 0.3], backgroundColor: amber, borderRadius: 5 },
+                { label: 'Feb 2025', data: [28.9, 32.7, 16.7, 1.8, 0.0], backgroundColor: light, borderRadius: 5 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f5f5f4' }, ticks: { callback: v => '\u00A3' + v + 'k' } },
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+            }
+        }
+    });
+
+    // 3 — Email (Doughnut)
+    new Chart(document.getElementById('emailPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Campaigns (\u00A326.6k)', 'Flows (\u00A313.7k)'],
+            datasets: [{ data: [26570, 13701], backgroundColor: [amber, stone], borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 4 — Traffic (Doughnut)
+    new Chart(document.getElementById('trafficPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Direct', 'Search', 'Social', 'Email', 'AI', 'Industry', 'Other'],
+            datasets: [{ data: [25615, 6709, 1851, 360, 22, 107, 209], backgroundColor: palette7, borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 4 — Traffic (Bar YoY)
+    new Chart(document.getElementById('trafficBar'), {
+        type: 'bar',
+        data: {
+            labels: ['Direct', 'Search', 'Social', 'Email', 'AI', 'Industry'],
+            datasets: [
+                { label: 'Feb 2026', data: [25615, 6709, 1851, 360, 22, 107], backgroundColor: amber, borderRadius: 5 },
+                { label: 'Feb 2025', data: [8768, 8341, 263, 230, 6, 175], backgroundColor: light, borderRadius: 5 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+            scales: { y: { beginAtZero: true, grid: { color: '#f5f5f4' } }, x: { grid: { display: false } } }
+        }
+    });
+
+    // 5 — Country (Doughnut)
+    new Chart(document.getElementById('locationPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['United States', 'United Kingdom', 'China', 'Singapore', 'S. Korea', 'Other'],
+            datasets: [{ data: [10146, 9672, 8202, 761, 720, 5372], backgroundColor: palette5.concat(['#e7e5e4']), borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 5 — Country (Horizontal Bar)
+    new Chart(document.getElementById('locationBar'), {
+        type: 'bar',
+        data: {
+            labels: ['United States', 'United Kingdom', 'China', 'Singapore', 'S. Korea'],
+            datasets: [{ data: [10146, 9672, 8202, 761, 720], backgroundColor: amber, borderRadius: 5 }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, grid: { color: '#f5f5f4' } }, y: { grid: { display: false } } }
+        }
+    });
+
+    /* ── TOC Scroll Spy ──────────────────────────── */
+    (function() {
+        const links = document.querySelectorAll('.toc-sidebar__link');
+        const sections = ['sec-revenue','sec-products','sec-email','sec-traffic','sec-countries']
+            .map(id => document.getElementById(id)).filter(Boolean);
+        if (!sections.length || !links.length) return;
+
+        function update() {
+            let current = 0;
+            const offset = 120;
+            // If at bottom of page, highlight last section
+            const atBottom = (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 40);
+            if (atBottom) {
+                current = sections.length - 1;
+            } else {
+                sections.forEach((sec, i) => {
+                    if (sec.getBoundingClientRect().top <= offset) current = i;
+                });
+            }
+            links.forEach(l => l.classList.remove('active'));
+            links[current].classList.add('active');
+        }
+        window.addEventListener('scroll', update, { passive: true });
+        update();
+
+        // Smooth scroll on click
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
