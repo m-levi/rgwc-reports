@@ -5,33 +5,66 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (authError) {
-      setError(authError.message);
+    if (mode === "login") {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
+
+      const redirect = searchParams.get("redirect") || "/";
+      router.push(redirect);
+      router.refresh();
+    } else {
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters");
+        setLoading(false);
+        return;
+      }
+
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name: name || email.split("@")[0] },
+        },
+      });
+
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
+
+      setSuccess("Account created! You can now sign in.");
+      setMode("login");
+      setPassword("");
+      setName("");
       setLoading(false);
-      return;
     }
-
-    const redirect = searchParams.get("redirect") || "/";
-    router.push(redirect);
-    router.refresh();
   };
 
   return (
@@ -54,11 +87,29 @@ export function LoginForm() {
             <polyline points="10 9 9 9 8 9" />
           </svg>
           <h1>Reports Dashboard</h1>
-          <p>Sign in to continue</p>
+          <p>{mode === "login" ? "Sign in to continue" : "Create your account"}</p>
         </div>
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form">
           {error && <div className="login-error">{error}</div>}
+          {success && (
+            <div className="login-success">{success}</div>
+          )}
+
+          {mode === "signup" && (
+            <div className="login-field">
+              <label htmlFor="name">Name</label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                required
+                autoFocus
+              />
+            </div>
+          )}
 
           <div className="login-field">
             <label htmlFor="email">Email</label>
@@ -69,7 +120,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
               required
-              autoFocus
+              autoFocus={mode === "login"}
             />
           </div>
 
@@ -80,14 +131,55 @@ export function LoginForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Your password"
+              placeholder={mode === "signup" ? "Min 8 characters" : "Your password"}
               required
+              minLength={mode === "signup" ? 8 : undefined}
             />
           </div>
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading
+              ? mode === "login"
+                ? "Signing in..."
+                : "Creating account..."
+              : mode === "login"
+                ? "Sign In"
+                : "Create Account"}
           </button>
+
+          <div className="login-toggle">
+            {mode === "login" ? (
+              <>
+                Don&apos;t have an account?{" "}
+                <button
+                  type="button"
+                  className="login-toggle__btn"
+                  onClick={() => {
+                    setMode("signup");
+                    setError("");
+                    setSuccess("");
+                  }}
+                >
+                  Sign Up
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="login-toggle__btn"
+                  onClick={() => {
+                    setMode("login");
+                    setError("");
+                    setSuccess("");
+                  }}
+                >
+                  Sign In
+                </button>
+              </>
+            )}
+          </div>
         </form>
       </div>
     </div>

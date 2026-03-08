@@ -1128,6 +1128,38 @@ a {
   font-size: 0.85rem;
 }
 
+.login-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.login-toggle {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.login-toggle__btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-toggle__btn:hover {
+  color: var(--accent-light);
+}
+
 /* ── Admin Layout ──────────────────────────── */
 
 .admin-layout {
