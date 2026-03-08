@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ clientId: string }> }
 ) {
   const { clientId } = await params;
-  const client = getClient(clientId);
+  const client = await getClient(clientId);
   if (!client) {
     return NextResponse.json([], { status: 404 });
   }
