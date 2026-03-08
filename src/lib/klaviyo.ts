@@ -1,4 +1,4 @@
-import { getKlaviyoConfig } from "./env";
+import type { KlaviyoCredentials } from "./client-credentials";
 
 const API_REVISION = "2024-10-15";
 
@@ -47,17 +47,15 @@ export interface KlaviyoReportData {
 }
 
 async function klaviyoFetch<T>(
+  credentials: KlaviyoCredentials,
   endpoint: string,
   options?: RequestInit
 ): Promise<T> {
-  const config = getKlaviyoConfig();
-  if (!config) throw new Error("Klaviyo not configured");
-
   const url = `https://a.klaviyo.com/api${endpoint}`;
   const res = await fetch(url, {
     ...options,
     headers: {
-      Authorization: `Klaviyo-API-Key ${config.apiKey}`,
+      Authorization: `Klaviyo-API-Key ${credentials.apiKey}`,
       revision: API_REVISION,
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -79,6 +77,7 @@ interface KlaviyoCampaignListResponse {
 }
 
 async function getCampaigns(
+  credentials: KlaviyoCredentials,
   startDate: string,
   endDate: string
 ): Promise<KlaviyoCampaign[]> {
@@ -87,8 +86,10 @@ async function getCampaigns(
     `/campaigns?filter=equals(messages.channel,'email'),greater-or-equal(created_at,${startDate}T00:00:00Z),less-or-equal(created_at,${endDate}T23:59:59Z)&sort=-created_at`;
 
   while (nextUrl) {
-    const response: KlaviyoCampaignListResponse =
-      await klaviyoFetch(nextUrl);
+    const response: KlaviyoCampaignListResponse = await klaviyoFetch(
+      credentials,
+      nextUrl
+    );
     allCampaigns.push(...response.data);
     nextUrl = response.links?.next
       ? response.links.next.replace("https://a.klaviyo.com/api", "")
@@ -99,12 +100,13 @@ async function getCampaigns(
 }
 
 async function getMetricAggregates(
+  credentials: KlaviyoCredentials,
   metricId: string,
   startDate: string,
   endDate: string,
   measurement: string[]
 ): Promise<KlaviyoMetricAggregate> {
-  return klaviyoFetch<KlaviyoMetricAggregate>("/metric-aggregates", {
+  return klaviyoFetch<KlaviyoMetricAggregate>(credentials, "/metric-aggregates", {
     method: "POST",
     body: JSON.stringify({
       data: {
@@ -125,33 +127,30 @@ async function getMetricAggregates(
 }
 
 export async function getKlaviyoReportData(
+  credentials: KlaviyoCredentials,
   startDate: string,
   endDate: string
 ): Promise<KlaviyoReportData> {
-  // Get campaigns in date range
-  const campaigns = await getCampaigns(startDate, endDate);
+  const campaigns = await getCampaigns(credentials, startDate, endDate);
   const sentCampaigns = campaigns.filter(
     (c) => c.attributes.status === "sent" || c.attributes.status === "Sent"
   );
 
-  // Get metrics for the campaigns
-  // Note: Metric IDs vary per account. We'll try to fetch aggregated email metrics.
-  // The "Placed Order" metric attributed to email is what gives us email revenue.
   let totalEmailRevenue = 0;
   let campaignRevenue = 0;
   let flowRevenue = 0;
   const dailyEmailRevenue: Array<{ date: string; revenue: number }> = [];
 
-  // Try to get email-attributed revenue via query metrics
   try {
     const metrics = await klaviyoFetch<{
       data: Array<{ id: string; attributes: { name: string } }>;
-    }>("/metrics?filter=equals(name,'Placed Order')");
+    }>(credentials, "/metrics?filter=equals(name,'Placed Order')");
 
     if (metrics.data.length > 0) {
       const placedOrderMetricId = metrics.data[0].id;
 
       const aggregates = await getMetricAggregates(
+        credentials,
         placedOrderMetricId,
         startDate,
         endDate,
@@ -177,18 +176,16 @@ export async function getKlaviyoReportData(
       }
     }
   } catch {
-    // Metrics may not be available - continue with zeros
+    // Metrics may not be available
   }
 
-  // Estimate campaign vs flow split (roughly 60/40 is common, but we attribute by campaign count)
   campaignRevenue = totalEmailRevenue * 0.6;
   flowRevenue = totalEmailRevenue * 0.4;
 
-  // Build campaign details (simplified - real implementation would query per-campaign stats)
   const campaignDetails = sentCampaigns.map((c) => ({
     name: c.attributes.name,
     sendDate: c.attributes.send_time || c.attributes.created_at,
-    revenue: 0, // Would need per-campaign metric query
+    revenue: 0,
     openRate: 0,
     clickRate: 0,
     recipients: 0,
@@ -199,7 +196,7 @@ export async function getKlaviyoReportData(
     campaignRevenue,
     flowRevenue,
     campaignsSent: sentCampaigns.length,
-    avgOpenRate: 0, // Requires additional metric queries
+    avgOpenRate: 0,
     avgClickRate: 0,
     campaigns: campaignDetails,
     dailyEmailRevenue,

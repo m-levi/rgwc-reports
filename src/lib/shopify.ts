@@ -1,4 +1,4 @@
-import { getShopifyConfig } from "./env";
+import type { ShopifyCredentials } from "./client-credentials";
 
 const API_VERSION = "2024-01";
 
@@ -34,14 +34,14 @@ export interface ShopifyReportData {
   dailyRevenue: Array<{ date: string; revenue: number; orders: number }>;
 }
 
-async function shopifyFetch<T>(endpoint: string): Promise<T> {
-  const config = getShopifyConfig();
-  if (!config) throw new Error("Shopify not configured");
-
-  const url = `https://${config.domain}/admin/api/${API_VERSION}${endpoint}`;
+async function shopifyFetch<T>(
+  credentials: ShopifyCredentials,
+  endpoint: string
+): Promise<T> {
+  const url = `https://${credentials.domain}/admin/api/${API_VERSION}${endpoint}`;
   const res = await fetch(url, {
     headers: {
-      "X-Shopify-Access-Token": config.accessToken,
+      "X-Shopify-Access-Token": credentials.accessToken,
       "Content-Type": "application/json",
     },
   });
@@ -58,6 +58,7 @@ interface ShopifyOrdersResponse {
 }
 
 async function fetchAllOrders(
+  credentials: ShopifyCredentials,
   startDate: string,
   endDate: string
 ): Promise<ShopifyOrder[]> {
@@ -66,10 +67,12 @@ async function fetchAllOrders(
     `/orders.json?created_at_min=${startDate}T00:00:00Z&created_at_max=${endDate}T23:59:59Z&status=any&limit=250`;
 
   while (pageUrl) {
-    const response: ShopifyOrdersResponse = await shopifyFetch(pageUrl);
+    const response: ShopifyOrdersResponse = await shopifyFetch(
+      credentials,
+      pageUrl
+    );
     allOrders.push(...response.orders);
 
-    // Simple pagination - if we got 250, there might be more
     if (response.orders.length === 250) {
       const lastId = response.orders[response.orders.length - 1].id;
       pageUrl = `/orders.json?created_at_min=${startDate}T00:00:00Z&created_at_max=${endDate}T23:59:59Z&status=any&limit=250&since_id=${lastId}`;
@@ -88,18 +91,18 @@ function mapSourceToChannel(sourceName: string): string {
     shopify_draft_order: "Draft Orders (B2B/Wholesale)",
     iphone: "Shopify Mobile",
     android: "Shopify Mobile",
-    "580111": "Online Store", // Shopify Flow / automation
+    "580111": "Online Store",
   };
   return map[sourceName] || sourceName || "Other";
 }
 
 export async function getShopifyReportData(
+  credentials: ShopifyCredentials,
   startDate: string,
   endDate: string
 ): Promise<ShopifyReportData> {
-  const orders = await fetchAllOrders(startDate, endDate);
+  const orders = await fetchAllOrders(credentials, startDate, endDate);
 
-  // Filter out cancelled orders
   const validOrders = orders.filter(
     (o) => !o.cancelled_at && o.financial_status !== "voided"
   );
@@ -120,7 +123,6 @@ export async function getShopifyReportData(
     revenueByChannel[channel] = (revenueByChannel[channel] || 0) + price;
     ordersByChannel[channel] = (ordersByChannel[channel] || 0) + 1;
 
-    // Products
     for (const item of order.line_items) {
       const existing = productMap.get(item.title) || {
         quantity: 0,
@@ -131,7 +133,6 @@ export async function getShopifyReportData(
       productMap.set(item.title, existing);
     }
 
-    // Daily breakdown
     const day = order.created_at.split("T")[0];
     const dayData = dailyMap.get(day) || { revenue: 0, orders: 0 };
     dayData.revenue += price;

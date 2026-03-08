@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getClient } from "@/lib/clients";
+import { getCurrentUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import { LogoutButton } from "./logout-button";
 
 export default async function ClientLayout({
   children,
@@ -10,8 +12,10 @@ export default async function ClientLayout({
   params: Promise<{ clientId: string }>;
 }) {
   const { clientId } = await params;
-  const client = getClient(clientId);
+  const client = await getClient(clientId);
   if (!client) notFound();
+
+  const user = await getCurrentUser();
 
   return (
     <>
@@ -35,6 +39,22 @@ export default async function ClientLayout({
         </Link>
         <div className="site-header__divider" />
         <span className="site-header__subtitle">{client.subtitle}</span>
+        <div className="site-header__right">
+          {user && (
+            <>
+              <span className="site-header__user">{user.name}</span>
+              {user.role === "admin" && (
+                <Link href="/admin" className="site-header__link">
+                  Admin
+                </Link>
+              )}
+              <Link href="/" className="site-header__link">
+                All Clients
+              </Link>
+              <LogoutButton />
+            </>
+          )}
+        </div>
       </header>
       <main>{children}</main>
     </>

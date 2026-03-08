@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getClient } from "@/lib/clients";
 import { getShopifyReportData } from "@/lib/shopify";
 import { getKlaviyoReportData } from "@/lib/klaviyo";
-import { getShopifyConfig, getKlaviyoConfig } from "@/lib/env";
+import { getClientCredentials } from "@/lib/client-credentials";
 import type { DynamicReportData } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ clientId: string }> }
 ) {
   const { clientId } = await params;
-  const client = getClient(clientId);
+  const client = await getClient(clientId);
   if (!client) {
     return NextResponse.json({ error: "Client not found" }, { status: 404 });
   }
@@ -28,7 +28,6 @@ export async function GET(
     );
   }
 
-  // Validate date format
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
     return NextResponse.json(
@@ -37,34 +36,43 @@ export async function GET(
     );
   }
 
+  // Get per-client credentials (with env var fallback)
+  const creds = await getClientCredentials(clientId);
+
   const errors: string[] = [];
   let shopifyData: DynamicReportData["shopify"] = null;
   let klaviyoData: DynamicReportData["klaviyo"] = null;
 
-  // Fetch Shopify data
-  if (getShopifyConfig()) {
-    try {
-      shopifyData = await getShopifyReportData(startDate, endDate);
-    } catch (err) {
-      errors.push(
-        `Shopify: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
-    }
+  // Fetch both APIs in parallel
+  const [shopifyResult, klaviyoResult] = await Promise.allSettled([
+    creds.shopify
+      ? getShopifyReportData(creds.shopify, startDate, endDate)
+      : Promise.reject(new Error("Not configured")),
+    creds.klaviyo
+      ? getKlaviyoReportData(creds.klaviyo, startDate, endDate)
+      : Promise.reject(new Error("Not configured")),
+  ]);
+
+  if (shopifyResult.status === "fulfilled") {
+    shopifyData = shopifyResult.value;
   } else {
-    errors.push("Shopify: Not configured (missing environment variables)");
+    const msg = shopifyResult.reason?.message || "Unknown error";
+    errors.push(
+      msg === "Not configured"
+        ? "Shopify: Not configured (add credentials in Admin)"
+        : `Shopify: ${msg}`
+    );
   }
 
-  // Fetch Klaviyo data
-  if (getKlaviyoConfig()) {
-    try {
-      klaviyoData = await getKlaviyoReportData(startDate, endDate);
-    } catch (err) {
-      errors.push(
-        `Klaviyo: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
-    }
+  if (klaviyoResult.status === "fulfilled") {
+    klaviyoData = klaviyoResult.value;
   } else {
-    errors.push("Klaviyo: Not configured (missing environment variables)");
+    const msg = klaviyoResult.reason?.message || "Unknown error";
+    errors.push(
+      msg === "Not configured"
+        ? "Klaviyo: Not configured (add credentials in Admin)"
+        : `Klaviyo: ${msg}`
+    );
   }
 
   const report: DynamicReportData = {
