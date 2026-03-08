@@ -18,21 +18,14 @@
 
         /* ── Hero Banner ──────────────────────────────── */
         .hero {
-            background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%);
+            background: #1e293b;
             color: #fff;
             padding: 56px 48px 48px;
-            position: relative;
-            overflow: hidden;
         }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -60%;
-            right: -10%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(217,119,6,0.12) 0%, transparent 70%);
-            border-radius: 50%;
+        @media (max-width: 600px) {
+            .hero { padding: 36px 20px 32px; }
+            .hero__title { font-size: 1.5rem; }
+            .hero__subtitle { font-size: 0.88rem; }
         }
         .hero__eyebrow {
             font-size: 0.7rem;
@@ -50,7 +43,7 @@
         }
         .hero__subtitle {
             font-size: 1rem;
-            color: #a8a29e;
+            color: #94a3b8;
             font-weight: 400;
         }
 
@@ -59,6 +52,9 @@
             background: #fff;
             border-bottom: 1px solid #e7e5e4;
             padding: 32px 48px;
+        }
+        @media (max-width: 600px) {
+            .exec-summary { padding: 24px 20px; }
         }
         .exec-summary__grid {
             display: grid;
@@ -149,6 +145,9 @@
 
         /* ── Content wrapper ──────────────────────────── */
         .content { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
+        @media (max-width: 600px) {
+            .content { padding: 0 16px 60px; }
+        }
 
         /* ── Layout with TOC on desktop ─────────────── */
         .content-layout {
@@ -179,6 +178,11 @@
 
         /* ── Section ──────────────────────────────────── */
         .section { margin-top: 56px; }
+        @media (max-width: 600px) {
+            .section { margin-top: 40px; }
+            .section__header { margin-bottom: 20px; }
+            .section__title { font-size: 0.75rem; }
+        }
         .section__header {
             display: flex;
             align-items: center;
@@ -216,7 +220,11 @@
             margin-bottom: 40px;
         }
         @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .kpi { padding: 16px; }
+            .kpi__value { font-size: 1.2rem; }
+        }
         .kpi {
             background: #fff;
             border-radius: 12px;
@@ -270,6 +278,10 @@
             border-radius: 12px;
             padding: 24px;
         }
+        @media (max-width: 600px) {
+            .chart-card { padding: 16px; border-radius: 10px; }
+            .chart-card__canvas { height: 220px; }
+        }
         .chart-card__title {
             font-size: 0.75rem;
             font-weight: 600;
@@ -287,6 +299,13 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 32px;
+        }
+        @media (max-width: 600px) {
+            .table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table-wrap table { min-width: 480px; }
         }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         thead th {
@@ -341,6 +360,9 @@
             margin-top: 1px;
         }
         .note strong { color: #1e3a8a; }
+        @media (max-width: 600px) {
+            .note { padding: 14px 16px; font-size: 0.78rem; }
+        }
 
         /* ── Metric Cards (smaller) ───────────────────── */
         .metric-grid {
@@ -350,6 +372,10 @@
             margin-bottom: 24px;
         }
         @media (max-width: 700px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+            .metric { padding: 14px; }
+            .metric__value { font-size: 1.1rem; }
+        }
         .metric {
             background: #fff;
             padding: 20px;
@@ -371,6 +397,10 @@
         .big-stat { text-align: center; }
         .big-stat__value { font-size: 2.5rem; font-weight: 700; color: #1c1917; }
         .big-stat__label { font-size: 0.82rem; color: #78716c; margin-top: 4px; }
+        @media (max-width: 600px) {
+            .big-stats { gap: 24px; padding: 24px 16px; }
+            .big-stat__value { font-size: 1.8rem; }
+        }
 
         /* ── Divider ──────────────────────────────────── */
         .divider { border: none; border-top: 1px solid #e7e5e4; margin: 56px 0; }

@@ -13,19 +13,22 @@ export interface ReportMeta {
   highlights: string[];
 }
 
-const REPORTS_DIR = path.join(process.cwd(), "public", "reports");
+function getClientReportsDir(clientId: string) {
+  return path.join(process.cwd(), "public", "reports", clientId);
+}
 
-export function getAllReports(): ReportMeta[] {
-  if (!fs.existsSync(REPORTS_DIR)) return [];
+export function getAllReports(clientId: string): ReportMeta[] {
+  const dir = getClientReportsDir(clientId);
+  if (!fs.existsSync(dir)) return [];
 
-  const entries = fs.readdirSync(REPORTS_DIR, { withFileTypes: true });
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   const reports: ReportMeta[] = [];
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
 
-    const metaPath = path.join(REPORTS_DIR, entry.name, "meta.json");
+    const metaPath = path.join(dir, entry.name, "meta.json");
     if (!fs.existsSync(metaPath)) continue;
 
     try {
@@ -43,8 +46,8 @@ export function getAllReports(): ReportMeta[] {
   return reports;
 }
 
-export function getReport(slug: string): ReportMeta | null {
-  const metaPath = path.join(REPORTS_DIR, slug, "meta.json");
+export function getReport(clientId: string, slug: string): ReportMeta | null {
+  const metaPath = path.join(getClientReportsDir(clientId), slug, "meta.json");
   if (!fs.existsSync(metaPath)) return null;
 
   try {
