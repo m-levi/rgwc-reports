@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-interface ClientRow {
-  id: string;
-  name: string;
-  subtitle: string;
-  is_active: boolean;
-  credentials: { provider: string }[];
-}
+export const dynamic = "force-dynamic";
 
 export default async function ClientsListPage() {
   const supabase = await createClient();

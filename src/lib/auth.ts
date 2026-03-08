@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export interface UserProfile {
@@ -9,28 +9,34 @@ export interface UserProfile {
 }
 
 export async function getCurrentUser(): Promise<UserProfile | null> {
-  const supabase = await createClient();
+  if (!isSupabaseConfigured()) return null;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
 
-  if (!user) return null;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+    if (!user) return null;
 
-  if (!profile) return null;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
 
-  return {
-    id: profile.id,
-    email: profile.email,
-    name: profile.name,
-    role: profile.role,
-  };
+    if (!profile) return null;
+
+    return {
+      id: profile.id,
+      email: profile.email,
+      name: profile.name,
+      role: profile.role,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function requireAuth(): Promise<UserProfile> {
