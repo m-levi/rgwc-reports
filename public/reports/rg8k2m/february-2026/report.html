@@ -478,6 +478,8 @@
         <li><a href="#sec-traffic" class="toc-sidebar__link"><span class="toc-sidebar__num">4</span> Traffic</a></li>
         <li><a href="#sec-countries" class="toc-sidebar__link"><span class="toc-sidebar__num">5</span> Countries</a></li>
         <li><a href="#sec-membership" class="toc-sidebar__link"><span class="toc-sidebar__num">6</span> Membership</a></li>
+        <li><a href="#sec-member-purchasing" class="toc-sidebar__link"><span class="toc-sidebar__num">7</span> Member Purchasing</a></li>
+        <li><a href="#sec-customer-loyalty" class="toc-sidebar__link"><span class="toc-sidebar__num">8</span> Customer Loyalty</a></li>
     </ul>
 </nav>
 
@@ -908,6 +910,164 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 7: MEMBER PURCHASING HABITS              -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-member-purchasing">
+    <div class="section__header">
+        <div class="section__number">7</div>
+        <div class="section__title">Member Purchasing Habits</div>
+    </div>
+
+    <div class="note" style="margin-bottom: 24px;">
+        Comparing Whisky Club members against the general customer base. Member data filtered by paid membership segment in Toki (rolling 30-day window ending Mar 8).
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi">
+            <div class="kpi__value">83</div>
+            <div class="kpi__label">Member Orders</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 4.6% MoM</div>
+            <div class="kpi__prior">22.5% of total orders</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">&pound;20,301</div>
+            <div class="kpi__label">Member Revenue</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 56.3% MoM</div>
+            <div class="kpi__prior">29.3% of total revenue</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">&pound;244.59</div>
+            <div class="kpi__label">Member AOV</div>
+            <div class="kpi__badge kpi__badge--down">&#9660; 54.2% MoM</div>
+            <div class="kpi__prior">vs &pound;171.60 non-member</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">47.6%</div>
+            <div class="kpi__label">Member Repeat Rate</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 0.1% MoM</div>
+            <div class="kpi__prior">vs 12.1% all customers</div>
+        </div>
+    </div>
+
+    <div class="chart-row" style="margin-top: 24px;">
+        <div class="chart-card" style="flex: 1;">
+            <div class="chart-card__title">Member vs Non-Member: Key Metrics</div>
+            <div style="height: 260px; padding: 16px;">
+                <canvas id="memberCompareBar"></canvas>
+            </div>
+        </div>
+        <div class="chart-card" style="flex: 1;">
+            <div class="chart-card__title">Revenue Share</div>
+            <div style="height: 260px; padding: 16px;">
+                <canvas id="memberRevPie"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr><th>Metric</th><th class="text-right">Members</th><th class="text-right">All Customers</th><th class="text-right">Member Premium</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>AOV</td><td class="text-right">&pound;244.59</td><td class="text-right">&pound;210.96</td><td class="text-right positive">+15.9%</td></tr>
+            <tr><td>Repeat Purchase Rate (1mo)</td><td class="text-right">47.62%</td><td class="text-right">12.08%</td><td class="text-right positive">+3.9&times;</td></tr>
+            <tr><td>Purchase Frequency (1mo)</td><td class="text-right">1.88</td><td class="text-right">1.35</td><td class="text-right positive">+39.3%</td></tr>
+            <tr><td>LTV (1mo)</td><td class="text-right">&pound;469.09</td><td class="text-right">&pound;285.89</td><td class="text-right positive">+64.1%</td></tr>
+            <tr><td>LTV (3mo)</td><td class="text-right">&pound;862.48</td><td class="text-right">&mdash;</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>LTV (6mo)</td><td class="text-right">&pound;1,099.84</td><td class="text-right">&mdash;</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>Purchase Frequency (3mo)</td><td class="text-right">2.32</td><td class="text-right">&mdash;</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>Purchase Frequency (6mo)</td><td class="text-right">3.01</td><td class="text-right">&mdash;</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>Orders</td><td class="text-right">83</td><td class="text-right">369</td><td class="text-right">22.5% share</td></tr>
+            <tr><td>Revenue</td><td class="text-right">&pound;20,301</td><td class="text-right">&pound;69,380</td><td class="text-right">29.3% share</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="note" style="margin-top: 16px;">
+        <strong>Key insight:</strong> Members order nearly 4&times; more frequently and spend 64% more in lifetime value than the average customer, despite comprising only ~22% of orders. The membership programme drives disproportionate value &mdash; 29% of revenue from 22% of orders with a 16% higher AOV.
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 8: CUSTOMER BASE & LOYALTY               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="sec-customer-loyalty">
+    <div class="section__header">
+        <div class="section__number">8</div>
+        <div class="section__title">Customer Base &amp; Loyalty</div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi">
+            <div class="kpi__value">281</div>
+            <div class="kpi__label">Unique Customers</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 86% vs Jan</div>
+            <div class="kpi__prior">Jan: 151</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">168</div>
+            <div class="kpi__label">First-Time Buyers</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 79% vs Jan</div>
+            <div class="kpi__prior">60% of customers</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">129</div>
+            <div class="kpi__label">Returning Customers</div>
+            <div class="kpi__badge kpi__badge--up">&#9650; 95% vs Jan</div>
+            <div class="kpi__prior">46% of customers</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__value">1.31</div>
+            <div class="kpi__label">Avg Orders per Customer</div>
+            <div class="kpi__prior">369 orders &divide; 281 customers</div>
+        </div>
+    </div>
+
+    <div class="chart-row" style="margin-top: 24px;">
+        <div class="chart-card" style="flex: 1;">
+            <div class="chart-card__title">New vs Returning Customers (Feb 2026)</div>
+            <div style="height: 260px; padding: 16px;">
+                <canvas id="newReturnPie"></canvas>
+            </div>
+        </div>
+        <div class="chart-card" style="flex: 1;">
+            <div class="chart-card__title">Customer Acquisition: Jan vs Feb</div>
+            <div style="height: 260px; padding: 16px;">
+                <canvas id="custAcqBar"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr><th>Metric</th><th class="text-right">Feb 2026</th><th class="text-right">Jan 2026</th><th class="text-right">Change</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Total Unique Customers</td><td class="text-right">281</td><td class="text-right">151</td><td class="text-right positive">+86%</td></tr>
+            <tr><td>First-Time (New) Customers</td><td class="text-right">168</td><td class="text-right">94</td><td class="text-right positive">+79%</td></tr>
+            <tr><td>Returning Customers</td><td class="text-right">129</td><td class="text-right">66</td><td class="text-right positive">+95%</td></tr>
+            <tr><td>New Customer Share</td><td class="text-right">60%</td><td class="text-right">62%</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>Returning Customer Share</td><td class="text-right">46%</td><td class="text-right">44%</td><td class="text-right positive">+2pp</td></tr>
+            <tr><td>Total Orders</td><td class="text-right">369</td><td class="text-right">253</td><td class="text-right positive">+45.8%</td></tr>
+            <tr><td>Avg Orders per Customer</td><td class="text-right">1.31</td><td class="text-right">1.68</td><td class="text-right">&mdash;</td></tr>
+            <tr><td>Repeat Purchase Rate</td><td class="text-right">12.1%</td><td class="text-right">12.1%</td><td class="text-right">&mdash; Stable</td></tr>
+            <tr><td>Purchase Frequency (1mo)</td><td class="text-right">1.35</td><td class="text-right">1.29</td><td class="text-right positive">+4.7%</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="note" style="margin-top: 16px;">
+        <strong>Key insight:</strong> February saw a significant surge in both new and returning customers, with returning customer growth (+95%) outpacing new customer growth (+79%). This suggests the brand is building genuine loyalty &mdash; not just acquiring one-time buyers. The stable 12.1% repeat purchase rate alongside rising purchase frequency (1.35, up 4.7%) indicates that repeat customers are buying more often.
+    </div>
+
+    <div class="note" style="margin-top: 12px;">
+        <strong>Toki Loyalty Programme:</strong> 197 new programme sign-ups (+52.7% MoM), 260 active loyalty users (+36.1%), and 14,832 total registered users in the loyalty ecosystem.
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!-- FOOTER                                          -->
 <!-- ═══════════════════════════════════════════════ -->
 <div class="footer">
@@ -1036,10 +1196,70 @@
         }
     });
 
+    // 7 — Member vs Non-Member Comparison (Bar)
+    new Chart(document.getElementById('memberCompareBar'), {
+        type: 'bar',
+        data: {
+            labels: ['AOV (£)', 'Repeat Rate (%)', 'Frequency', 'LTV 1mo (£÷10)'],
+            datasets: [
+                { label: 'Members', data: [244.59, 47.62, 1.88, 46.9], backgroundColor: amber, borderRadius: 5 },
+                { label: 'All Customers', data: [210.96, 12.08, 1.35, 28.6], backgroundColor: light, borderRadius: 5 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f5f5f4' } },
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+            }
+        }
+    });
+
+    // 7 — Revenue Share (Doughnut)
+    new Chart(document.getElementById('memberRevPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Members (£20.3k)', 'Non-Members (£49.1k)'],
+            datasets: [{ data: [20301, 49079], backgroundColor: [amber, light], borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 8 — New vs Returning (Doughnut)
+    new Chart(document.getElementById('newReturnPie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['First-Time (168)', 'Returning (129)'],
+            datasets: [{ data: [168, 129], backgroundColor: [blue, amber], borderWidth: 0 }]
+        },
+        options: doughnutOpts
+    });
+
+    // 8 — Customer Acquisition Jan vs Feb (Bar)
+    new Chart(document.getElementById('custAcqBar'), {
+        type: 'bar',
+        data: {
+            labels: ['New Customers', 'Returning Customers', 'Total Customers'],
+            datasets: [
+                { label: 'Feb 2026', data: [168, 129, 281], backgroundColor: amber, borderRadius: 5 },
+                { label: 'Jan 2026', data: [94, 66, 151], backgroundColor: light, borderRadius: 5 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f5f5f4' } },
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+            }
+        }
+    });
+
     /* ── TOC Scroll Spy ──────────────────────────── */
     (function() {
         const links = document.querySelectorAll('.toc-sidebar__link');
-        const sections = ['sec-revenue','sec-products','sec-email','sec-traffic','sec-countries']
+        const sections = ['sec-revenue','sec-products','sec-email','sec-traffic','sec-countries','sec-membership','sec-member-purchasing','sec-customer-loyalty']
             .map(id => document.getElementById(id)).filter(Boolean);
         if (!sections.length || !links.length) return;
 
