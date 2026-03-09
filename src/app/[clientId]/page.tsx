@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 interface ReportMeta {
   slug: string;
@@ -21,6 +22,7 @@ export default function ClientReports() {
   const [reports, setReports] = useState<ReportMeta[]>([]);
   const [search, setSearch] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetch(`/api/reports/${clientId}`)
@@ -30,6 +32,10 @@ export default function ClientReports() {
         setLoaded(true);
       })
       .catch(() => setLoaded(true));
+
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
   }, [clientId]);
 
   const filtered = reports.filter((r) =>
@@ -46,12 +52,14 @@ export default function ClientReports() {
               {reports.length} report{reports.length !== 1 ? "s" : ""} available
             </p>
           </div>
-          <Link href={`/${clientId}/dynamic`} className="dynamic-report-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-            Dynamic Report
-          </Link>
+          {isLoggedIn && (
+            <Link href={`/${clientId}/dynamic`} className="dynamic-report-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+              Dynamic Report
+            </Link>
+          )}
         </div>
       </div>
 
@@ -99,10 +107,12 @@ export default function ClientReports() {
             </svg>
           </div>
           <div className="empty-state__title">No reports yet</div>
-          <div className="empty-state__text">
-            Add a report folder to <code>public/reports/{clientId}/</code> with a{" "}
-            <code>report.html</code> and <code>meta.json</code>.
-          </div>
+          {isLoggedIn && (
+            <div className="empty-state__text">
+              Add a report folder to <code>public/reports/{clientId}/</code> with a{" "}
+              <code>report.html</code> and <code>meta.json</code>.
+            </div>
+          )}
         </div>
       )}
 
