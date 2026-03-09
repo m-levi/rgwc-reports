@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 interface ReportMeta {
   slug: string;
@@ -33,9 +33,11 @@ export default function ClientReports() {
       })
       .catch(() => setLoaded(true));
 
-    createClient().auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
-    });
+    if (isSupabaseConfigured()) {
+      createClient().auth.getUser().then(({ data: { user } }) => {
+        setIsLoggedIn(!!user);
+      }).catch(() => {});
+    }
   }, [clientId]);
 
   const filtered = reports.filter((r) =>
